@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Multilanguage Translator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center relative overflow-hidden">
+
+  <!-- Background Gradient -->
+  <div class="absolute inset-0 bg-gradient-to-r from-pink-400 via-pink-300 to-sky-300"></div>
+
+  <!-- Floating Circles -->
+  <div class="absolute top-10 left-5 w-16 h-16 bg-pink-500 rounded-full"></div>
+  <div class="absolute top-40 left-14 w-8 h-8 bg-pink-200 rounded-full"></div>
+  <div class="absolute bottom-16 right-12 w-24 h-24 border-4 border-pink-400 rounded-full"></div>
+  <div class="absolute top-20 right-8 w-12 h-12 bg-pink-300 rounded-full"></div>
+  <div class="absolute bottom-32 right-20 w-6 h-6 bg-pink-200 rounded-full"></div>
+
+  <!-- Main Container -->
+  <div class="relative bg-white/40 backdrop-blur-md rounded-3xl shadow-lg w-full max-w-xl p-8 z-10 text-center">
+    
+    <!-- Title -->
+    <h1 class="text-2xl font-semibold text-white mb-6">Translator</h1>
+
+    <!-- Language Selectors -->
+    <div class="flex flex-wrap justify-center gap-3 mb-8">
+      <select id="sourceLang" class="px-4 py-2 rounded-full bg-white/70 text-gray-700 focus:ring-2 focus:ring-pink-400">
+        <!-- Dynamically populate -->
+      </select>
+      <button id="swap" class="px-3 py-2 rounded-full bg-white/70 text-gray-700 hover:bg-white transition">⇄</button>
+      <select id="targetLang" class="px-4 py-2 rounded-full bg-white/70 text-gray-700 focus:ring-2 focus:ring-pink-400">
+        <!-- Dynamically populate -->
+      </select>
+    </div>
+
+    <!-- Input Text -->
+    <div class="relative mb-6">
+      <textarea id="inputText" rows="3" placeholder="Type text to translate..."
+        class="w-full px-5 py-3 rounded-full bg-white/70 border-none focus:ring-2 focus:ring-pink-400 resize-none"></textarea>
+      <button id="translateBtn" 
+        class="absolute right-3 top-1/2 -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white p-2 rounded-full shadow-md transition">
+        ✈️
+      </button>
+    </div>
+
+    <!-- Output Box with Speaker -->
+    <div class="flex items-center justify-between mt-6 bg-white/60 rounded-3xl px-5 py-4">
+      <div id="translatedText" class="text-gray-800 text-lg min-h-[50px] flex-1">
+        <!-- Translation will appear here -->
+      </div>
+      <!-- 🔊 Speech Button -->
+      <button id="speakBtn" 
+        class="ml-3 bg-pink-500 hover:bg-pink-600 text-white p-2 rounded-full shadow-md transition">
+        🔊
+      </button>
+    </div>
+
+    <!-- Error message -->
+    <div id="error" class="text-red-600 mt-4"></div>
+  </div>
+
+  <script src="./index.js"></script>
+</body>
+</html>
