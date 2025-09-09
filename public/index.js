@@ -103,22 +103,20 @@ const inputText = document.getElementById("inputText");
 const translatedText = document.getElementById("translatedText");
 const errorDiv = document.getElementById("error");
 const swapBtn = document.getElementById("swap");
+const voiceBtn = document.getElementById("voiceBtn"); // 🎤 For speech input
 const speakBtn = document.getElementById("speakBtn");
-
-// Populate dropdowns
+// ================== Populate Dropdowns ================== //
 function populateLangSelects() {
   LANGUAGES.forEach(({ code, name }) => {
-    const option1 = new Option(name, code);
-    const option2 = new Option(name, code);
-    sourceLang.appendChild(option1);
-    targetLang.appendChild(option2);
+    sourceLang.appendChild(new Option(name, code));
+    targetLang.appendChild(new Option(name, code));
   });
   sourceLang.value = "en";
   targetLang.value = "es";
 }
 populateLangSelects();
 
-// Swap languages
+// ================== Swap Languages ================== //
 swapBtn.addEventListener("click", () => {
   const temp = sourceLang.value;
   sourceLang.value = targetLang.value;
@@ -128,7 +126,7 @@ swapBtn.addEventListener("click", () => {
   autoTranslate();
 });
 
-// Live Translation Logic
+// ================== Live Translation ================== //
 let debounceTimer;
 function triggerLiveTranslate() {
   clearTimeout(debounceTimer);
@@ -140,7 +138,7 @@ inputText.addEventListener("input", triggerLiveTranslate);
 sourceLang.addEventListener("change", autoTranslate);
 targetLang.addEventListener("change", autoTranslate);
 
-// Translation function
+// ================== Translation Logic ================== //
 async function autoTranslate() {
   const text = inputText.value.trim();
   if (!text || sourceLang.value === targetLang.value) {
@@ -176,7 +174,7 @@ async function autoTranslate() {
   }
 }
 
-// ================== SPEECH FEATURE ================== //
+// ================== SPEECH OUTPUT ================== //
 speakBtn.addEventListener("click", () => {
   const text = translatedText.textContent.trim();
   if (!text) {
@@ -186,11 +184,46 @@ speakBtn.addEventListener("click", () => {
 
   const utterance = new SpeechSynthesisUtterance(text);
 
-  // Match language with targetLang dropdown
+  // Match speech with target language
   const lang = targetLang.value;
   if (lang) {
-    utterance.lang = lang; // e.g. "en", "fr", "es"
+    utterance.lang = lang;
   }
 
   speechSynthesis.speak(utterance);
 });
+
+// ================== SPEECH INPUT ================== //
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+  const recognition = new SpeechRecognition();
+  recognition.continuous = false; // Stop after one phrase
+  recognition.interimResults = false;
+  recognition.lang = "en-US"; // Default (we'll update dynamically)
+
+  voiceBtn.addEventListener("click", () => {
+    recognition.lang = sourceLang.value; // 🎯 Listen in selected source language
+    recognition.start();
+    errorDiv.textContent = "🎤 Listening... speak now!";
+  });
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    inputText.value = transcript;
+    autoTranslate();
+  };
+
+  recognition.onerror = (event) => {
+    errorDiv.textContent = "❌ Voice error: " + event.error;
+  };
+
+  recognition.onend = () => {
+    errorDiv.textContent = "";
+  };
+} else {
+  voiceBtn.disabled = true;
+  errorDiv.textContent =
+    "⚠️ Speech recognition not supported in this browser.";
+}
