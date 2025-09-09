@@ -96,13 +96,16 @@ const LANGUAGES = [
   { code: "yi", name: "Yiddish" }
 ];
 
+
 const sourceLang = document.getElementById("sourceLang");
 const targetLang = document.getElementById("targetLang");
 const inputText = document.getElementById("inputText");
 const translatedText = document.getElementById("translatedText");
 const errorDiv = document.getElementById("error");
 const swapBtn = document.getElementById("swap");
+const speakBtn = document.getElementById("speakBtn");
 
+// Populate dropdowns
 function populateLangSelects() {
   LANGUAGES.forEach(({ code, name }) => {
     const option1 = new Option(name, code);
@@ -127,18 +130,17 @@ swapBtn.addEventListener("click", () => {
 
 // Live Translation Logic
 let debounceTimer;
-
 function triggerLiveTranslate() {
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
     autoTranslate();
-  }, 500); // Debounce delay
+  }, 500);
 }
-
 inputText.addEventListener("input", triggerLiveTranslate);
 sourceLang.addEventListener("change", autoTranslate);
 targetLang.addEventListener("change", autoTranslate);
 
+// Translation function
 async function autoTranslate() {
   const text = inputText.value.trim();
   if (!text || sourceLang.value === targetLang.value) {
@@ -153,9 +155,7 @@ async function autoTranslate() {
   try {
     const response = await fetch("http://localhost:5000/translate", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         q: text,
         source: sourceLang.value,
@@ -163,31 +163,6 @@ async function autoTranslate() {
         format: "text"
       })
     });
-    // ================== SPEECH FEATURE ================== //
-const speakBtn = document.getElementById("speakBtn");
-const translatedText = document.getElementById("translatedText");
-
-speakBtn.addEventListener("click", () => {
-  const text = translatedText.textContent.trim();
-
-  if (!text) {
-    alert("Nothing to speak!");
-    return;
-  }
-
-  // Create a speech synthesis utterance
-  const utterance = new SpeechSynthesisUtterance(text);
-
-  // Optionally set language to match targetLang dropdown
-  const targetLang = document.getElementById("targetLang").value;
-  if (targetLang) {
-    utterance.lang = targetLang; // Example: "en", "fr", "es"
-  }
-
-  // Speak it
-  speechSynthesis.speak(utterance);
-});
-  
 
     const data = await response.json();
     if (!response.ok || !data.translatedText) {
@@ -200,3 +175,22 @@ speakBtn.addEventListener("click", () => {
     errorDiv.textContent = "❌ " + err.message;
   }
 }
+
+// ================== SPEECH FEATURE ================== //
+speakBtn.addEventListener("click", () => {
+  const text = translatedText.textContent.trim();
+  if (!text) {
+    alert("Nothing to speak!");
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  // Match language with targetLang dropdown
+  const lang = targetLang.value;
+  if (lang) {
+    utterance.lang = lang; // e.g. "en", "fr", "es"
+  }
+
+  speechSynthesis.speak(utterance);
+});
